@@ -7,13 +7,11 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.example.maola.bakingapp.Adapter.IngredientAdapter;
 import com.example.maola.bakingapp.Adapter.StepAdapter;
@@ -41,7 +39,7 @@ public class MasterListFragment extends Fragment implements StepAdapter.ListItem
     }
 
     public interface onStepClickListener{
-        void onStepClicked(Step step, int index);
+        void onStepClicked(ArrayList<Step> stepList, int index);
     }
 
     @Override
@@ -74,7 +72,7 @@ public class MasterListFragment extends Fragment implements StepAdapter.ListItem
         if(bundle != null){
             // Get steps and ingredients
             ingredientList = bundle.getParcelableArrayList(Ingredient.mIngredientString);
-            stepList = bundle.getParcelableArrayList(Step.mStepString);
+            stepList = bundle.getParcelableArrayList(Step.mString);
 
             mStepRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             StepAdapter stepAdapter = new StepAdapter(stepList, this);
@@ -108,6 +106,6 @@ public class MasterListFragment extends Fragment implements StepAdapter.ListItem
     @Override
     public void onListItemClick(int clickedItemIndex) {
 //       Toast.makeText(getContext(), "Clicked " + clickedItemIndex, Toast.LENGTH_SHORT).show();
-       onStepClickListener.onStepClicked(stepList.get(clickedItemIndex), clickedItemIndex);
+       onStepClickListener.onStepClicked(stepList, clickedItemIndex);
     }
 }

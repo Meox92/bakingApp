@@ -6,7 +6,7 @@ import android.os.Parcelable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 
-import com.example.maola.bakingapp.Model.Ingredient;
+import com.example.maola.bakingapp.Constants;
 import com.example.maola.bakingapp.Model.Step;
 import com.example.maola.bakingapp.R;
 
@@ -23,14 +23,16 @@ public class StepDetailActivity extends AppCompatActivity {
 
         Intent i = getIntent();
         Bundle bundle = i.getExtras();
-        Step step = bundle.getParcelable(Step.mStepString);
+        ArrayList<Step> stepList = bundle.getParcelableArrayList(Constants.STEP);
+        int stepIndex = bundle.getInt(Constants.STEP_INDEX);
 
         if(savedInstanceState == null){
             StepDetailFragment stepDetailFragment = new StepDetailFragment();
             FragmentManager fragmentManager = getSupportFragmentManager();
 
             Bundle b = new Bundle();
-            b.putParcelable(Step.mStepString, step);
+            b.putParcelableArrayList(Step.mString, (ArrayList<? extends Parcelable>) stepList);
+            b.putInt(Constants.STEP_INDEX, stepIndex);
             stepDetailFragment.setArguments(b);
 
             fragmentManager.beginTransaction()

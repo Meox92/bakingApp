@@ -6,12 +6,12 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.maola.bakingapp.Constants;
 import com.example.maola.bakingapp.Model.Step;
 import com.example.maola.bakingapp.R;
 import com.google.android.exoplayer2.DefaultLoadControl;
@@ -25,6 +25,8 @@ import com.google.android.exoplayer2.ui.PlayerView;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
 
+import java.util.ArrayList;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -35,6 +37,7 @@ public class StepDetailFragment extends Fragment {
     private int currentWindow = 0;
     private Boolean playWhenReady = true;
     private Step step;
+    private ArrayList<Step> stepList;
     private static String PLAYBACK_POSITION = "PLAYBACK_POSITION";
     private static String CURRENT_WINDOW = "CURRENT_WINDOWS";
 
@@ -60,8 +63,11 @@ public class StepDetailFragment extends Fragment {
         Bundle bundle = this.getArguments();
 
         if(bundle != null){
-            step = bundle.getParcelable(Step.mStepString);
-            textView.setText(step.getDescription());
+//            step = bundle.getParcelable(Step.mString);
+            stepList = bundle.getParcelableArrayList(Constants.STEP);
+            int stepIndex = bundle.getInt(Constants.STEP_INDEX);
+            step = stepList.get(stepIndex);
+            textView.setText(stepList.get(stepIndex).getDescription());
             initializePlayer();
         }
 

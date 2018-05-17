@@ -10,7 +10,7 @@ import com.google.gson.annotations.SerializedName;
 
 public class Step implements Parcelable{
 
-    public static String mStepString = "STEP";
+    public static String mString = "STEP";
 
 
     @SerializedName("id")

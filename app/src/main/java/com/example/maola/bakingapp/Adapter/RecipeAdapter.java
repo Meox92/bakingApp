@@ -101,7 +101,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.MyViewHold
                     Toast.makeText(v.getContext(), "Clicked", Toast.LENGTH_SHORT).show();
                     Bundle bundle = new Bundle();
                     bundle.putParcelableArrayList(Ingredient.mIngredientString, (ArrayList<? extends Parcelable>) ingredientList);
-                    bundle.putParcelableArrayList(Step.mStepString, (ArrayList<? extends Parcelable>) stepList);
+                    bundle.putParcelableArrayList(Step.mString, (ArrayList<? extends Parcelable>) stepList);
                     bundle.putString("TITLE", title);
                     final Intent i = new Intent(v.getContext(), MasterListActivity.class);
                     i.putExtras(bundle);

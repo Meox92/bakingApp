@@ -5,7 +5,8 @@ import android.os.Parcelable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.widget.Toast;
+
+import com.example.maola.bakingapp.Constants;
 import com.example.maola.bakingapp.Model.Ingredient;
 import com.example.maola.bakingapp.Model.Step;
 import com.example.maola.bakingapp.R;
@@ -26,14 +27,14 @@ public class MasterListActivity extends AppCompatActivity implements MasterListF
         Intent i = getIntent();
         Bundle bundle = i.getExtras();
         ingredientList = bundle.getParcelableArrayList(Ingredient.mIngredientString);
-        stepList = bundle.getParcelableArrayList(Step.mStepString);
+        stepList = bundle.getParcelableArrayList(Step.mString);
         setTitle(bundle.getString("TITLE"));
 
 
         // Pass the data to the fragment to create the recyclerView
         Bundle b = new Bundle();
         b.putParcelableArrayList(Ingredient.mIngredientString, (ArrayList<? extends Parcelable>) ingredientList);
-        b.putParcelableArrayList(Step.mStepString, (ArrayList<? extends Parcelable>) stepList);
+        b.putParcelableArrayList(Step.mString, (ArrayList<? extends Parcelable>) stepList);
 
         // Start the fragment
         if(savedInstanceState == null){
@@ -49,10 +50,11 @@ public class MasterListActivity extends AppCompatActivity implements MasterListF
 
 
     @Override
-    public void onStepClicked(Step step, int index) {
+    public void onStepClicked(ArrayList<Step> stepList, int index) {
 //        Toast.makeText(getApplicationContext(), "Clicked " + step.getDescription(), Toast.LENGTH_SHORT).show();
         Bundle bundle = new Bundle();
-        bundle.putParcelable(Step.mStepString, step);
+        bundle.putParcelableArrayList(Constants.STEP, (ArrayList<? extends Parcelable>) stepList);
+        bundle.putInt(Constants.STEP_INDEX, index);
         final Intent i = new Intent(getApplicationContext(), StepDetailActivity.class);
         i.putExtras(bundle);
         startActivity(i);
