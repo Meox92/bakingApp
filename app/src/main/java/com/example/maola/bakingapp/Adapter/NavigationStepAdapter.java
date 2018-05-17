@@ -1,26 +1,26 @@
 package com.example.maola.bakingapp.Adapter;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.example.maola.bakingapp.Model.Recipe;
 import com.example.maola.bakingapp.Model.Step;
 import com.example.maola.bakingapp.R;
-import com.example.maola.bakingapp.UI.MasterListFragment;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
-public class StepAdapter extends RecyclerView.Adapter<StepAdapter.MyViewHolder> {
+public class NavigationStepAdapter extends RecyclerView.Adapter<NavigationStepAdapter.MyViewHolder> {
 
     private ArrayList<Step> stepArrayList;
     private Step step;
+    private int selectedStep;
     private ListItemClickListener listItemClickListener;
 
     public interface ListItemClickListener {
@@ -28,16 +28,17 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.MyViewHolder> 
     }
 
 
-    public StepAdapter(ArrayList<Step> stepArrayList, ListItemClickListener listItemClickListener) {
+    public NavigationStepAdapter(ArrayList<Step> stepArrayList, ListItemClickListener listItemClickListener, int selectedStep) {
         this.stepArrayList = stepArrayList;
         this.listItemClickListener = listItemClickListener;
+        this.selectedStep = selectedStep;
     }
 
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         Context context = parent.getContext();
-        int layoutIdForListItem = R.layout.step_adapter_item;
+        int layoutIdForListItem = R.layout.navigation_step_item;
         LayoutInflater inflater = LayoutInflater.from(context);
         boolean shouldAttachToParentImmediately = false;
 
@@ -51,16 +52,19 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.MyViewHolder> 
     @Override
     public void onBindViewHolder(MyViewHolder holder, final int position) {
         step = stepArrayList.get(position);
-
-        holder.title.setText(step.getShortDescription());
-        holder.long_description.setText(step.getDescription());
-
-        String videoURL = step.getVideoURL();
-        if(videoURL != null && videoURL != ""){
-            holder.imageView.setVisibility(View.VISIBLE);
+        String text = "Intro";
+        if(step.getId() != 0) {
+            text = "Step ".concat(String.valueOf(step.getId()));
+        }
+        holder.button.setText(text);
+        if(position == selectedStep){
+            holder.button.setBackgroundColor(Color.parseColor("#d32f2f"));
+        } else {
+            holder.button.setBackgroundColor(Color.parseColor("#9e0707"));
         }
 
         holder.position = position;
+
     }
 
     @Override
@@ -70,19 +74,14 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.MyViewHolder> 
 
 
     public class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        public TextView title;
-        public TextView long_description;
-        public ImageView imageView;
         private int position;
+        private Button button;
 
         public MyViewHolder(View view) {
             super(view);
-            title = (TextView) view.findViewById(R.id.step_adpt_tv_short_description);
-            long_description = (TextView) view.findViewById(R.id.step_adpt_tv_long_description);
-            imageView = (ImageView) view.findViewById(R.id.step_adpt_iv_video_button);
-            position = getAdapterPosition();
-
-            view.setOnClickListener(this);
+            button = (Button)view.findViewById(R.id.button);
+            button.setOnClickListener(this);
+//            view.setOnClickListener(this);
         }
 
 

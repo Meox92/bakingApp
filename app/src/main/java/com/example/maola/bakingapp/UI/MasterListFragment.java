@@ -15,6 +15,7 @@ import android.widget.TextView;
 
 import com.example.maola.bakingapp.Adapter.IngredientAdapter;
 import com.example.maola.bakingapp.Adapter.StepAdapter;
+import com.example.maola.bakingapp.Constants;
 import com.example.maola.bakingapp.Model.Ingredient;
 import com.example.maola.bakingapp.Model.Step;
 import com.example.maola.bakingapp.R;
@@ -71,8 +72,8 @@ public class MasterListFragment extends Fragment implements StepAdapter.ListItem
         Bundle bundle = this.getArguments();
         if(bundle != null){
             // Get steps and ingredients
-            ingredientList = bundle.getParcelableArrayList(Ingredient.mIngredientString);
-            stepList = bundle.getParcelableArrayList(Step.mString);
+            ingredientList = bundle.getParcelableArrayList(Constants.INGREDIENT);
+            stepList = bundle.getParcelableArrayList(Constants.STEP);
 
             mStepRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             StepAdapter stepAdapter = new StepAdapter(stepList, this);

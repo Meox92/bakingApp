@@ -2,15 +2,19 @@ package com.example.maola.bakingapp.UI;
 
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.maola.bakingapp.Adapter.NavigationStepAdapter;
 import com.example.maola.bakingapp.Constants;
 import com.example.maola.bakingapp.Model.Step;
 import com.example.maola.bakingapp.R;
@@ -30,9 +34,10 @@ import java.util.ArrayList;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class StepDetailFragment extends Fragment {
+public class StepDetailFragment extends Fragment implements NavigationStepAdapter.ListItemClickListener {
     private PlayerView playerView;
     private SimpleExoPlayer player;
+    private RecyclerView mRecyclerView;
     private long playbackPosition = 0;
     private int currentWindow = 0;
     private Boolean playWhenReady = true;
@@ -40,10 +45,30 @@ public class StepDetailFragment extends Fragment {
     private ArrayList<Step> stepList;
     private static String PLAYBACK_POSITION = "PLAYBACK_POSITION";
     private static String CURRENT_WINDOW = "CURRENT_WINDOWS";
+    private onNavigationStepClickListener onNavigationStepClickListener;
+
 
 
     public StepDetailFragment() {
         // Required empty public constructor
+    }
+
+    public interface onNavigationStepClickListener{
+        void onNavigationStepClicked(int index);
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+
+        // This makes sure that the host activity has implemented the callback interface
+        // If not, it throws an exception
+        try {
+            onNavigationStepClickListener = (onNavigationStepClickListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString()
+                    + " must implement OnImageClickListener");
+        }
     }
 
 
@@ -59,7 +84,10 @@ public class StepDetailFragment extends Fragment {
         }
 
         playerView = (PlayerView) rootView.findViewById(R.id.detail_video_player);
+        mRecyclerView = (RecyclerView) rootView.findViewById(R.id.detail_recycler_view);
         TextView textView = (TextView) rootView.findViewById(R.id.detail_description_tv);
+
+
         Bundle bundle = this.getArguments();
 
         if(bundle != null){
@@ -67,8 +95,17 @@ public class StepDetailFragment extends Fragment {
             stepList = bundle.getParcelableArrayList(Constants.STEP);
             int stepIndex = bundle.getInt(Constants.STEP_INDEX);
             step = stepList.get(stepIndex);
+
+            LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
+            layoutManager.scrollToPositionWithOffset(stepIndex, 20);
+
+            mRecyclerView.setLayoutManager(layoutManager);
+            NavigationStepAdapter navigationStepAdapter = new NavigationStepAdapter(stepList, this, stepIndex);
+            mRecyclerView.setAdapter(navigationStepAdapter);
+
             textView.setText(stepList.get(stepIndex).getDescription());
             initializePlayer();
+
         }
 
 
@@ -89,14 +126,16 @@ public class StepDetailFragment extends Fragment {
 
         playerView.setPlayer(player);
 
-
-        if(step.getVideoURL() != null && step.getVideoURL() != ""){
-            Uri uri = Uri.parse(step.getVideoURL());
-            MediaSource mediaSource = buildMediaSource(uri);
-            player.prepare(mediaSource);
-            player.seekTo(playbackPosition);
-            player.setPlayWhenReady(playWhenReady);
+        if(step.getVideoURL() == null || step.getVideoURL().equals("")){
+            playerView.setVisibility(View.GONE);
+            return;
         }
+
+        Uri uri = Uri.parse(step.getVideoURL());
+        MediaSource mediaSource = buildMediaSource(uri);
+        player.prepare(mediaSource);
+        player.seekTo(playbackPosition);
+        player.setPlayWhenReady(playWhenReady);
     }
 
     private MediaSource buildMediaSource(Uri uri) {
@@ -146,5 +185,10 @@ public class StepDetailFragment extends Fragment {
             player.release();
             player = null;
         }
+    }
+
+    @Override
+    public void onListItemClick(int clickedItemIndex) {
+        onNavigationStepClickListener.onNavigationStepClicked(clickedItemIndex);
     }
 }

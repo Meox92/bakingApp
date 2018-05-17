@@ -12,8 +12,9 @@ import com.example.maola.bakingapp.R;
 
 import java.util.ArrayList;
 
-public class StepDetailActivity extends AppCompatActivity {
-
+public class StepDetailActivity extends AppCompatActivity implements StepDetailFragment.onNavigationStepClickListener{
+    private int stepIndex;
+    private ArrayList<Step> stepList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -23,15 +24,15 @@ public class StepDetailActivity extends AppCompatActivity {
 
         Intent i = getIntent();
         Bundle bundle = i.getExtras();
-        ArrayList<Step> stepList = bundle.getParcelableArrayList(Constants.STEP);
-        int stepIndex = bundle.getInt(Constants.STEP_INDEX);
+        stepList = bundle.getParcelableArrayList(Constants.STEP);
+        stepIndex = bundle.getInt(Constants.STEP_INDEX);
 
         if(savedInstanceState == null){
             StepDetailFragment stepDetailFragment = new StepDetailFragment();
             FragmentManager fragmentManager = getSupportFragmentManager();
 
             Bundle b = new Bundle();
-            b.putParcelableArrayList(Step.mString, (ArrayList<? extends Parcelable>) stepList);
+            b.putParcelableArrayList(Constants.STEP, (ArrayList<? extends Parcelable>) stepList);
             b.putInt(Constants.STEP_INDEX, stepIndex);
             stepDetailFragment.setArguments(b);
 
@@ -39,5 +40,21 @@ public class StepDetailActivity extends AppCompatActivity {
                     .add(R.id.step_detail_fragment, stepDetailFragment)
                     .commit();
         }
+    }
+
+    @Override
+    public void onNavigationStepClicked(int index) {
+        stepIndex = index;
+        StepDetailFragment stepDetailFragment = new StepDetailFragment();
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        Bundle b = new Bundle();
+        b.putParcelableArrayList(Constants.STEP, (ArrayList<? extends Parcelable>) stepList);
+        b.putInt(Constants.STEP_INDEX, stepIndex);
+        stepDetailFragment.setArguments(b);
+
+        fragmentManager.beginTransaction()
+                .replace(R.id.step_detail_fragment, stepDetailFragment)
+                .commit();
     }
 }

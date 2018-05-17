@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.maola.bakingapp.Constants;
 import com.example.maola.bakingapp.Model.Ingredient;
 import com.example.maola.bakingapp.Model.Recipe;
 import com.example.maola.bakingapp.Model.Step;
@@ -100,8 +101,8 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.MyViewHold
                     String title = recipeArrayList.get(position).getName();
                     Toast.makeText(v.getContext(), "Clicked", Toast.LENGTH_SHORT).show();
                     Bundle bundle = new Bundle();
-                    bundle.putParcelableArrayList(Ingredient.mIngredientString, (ArrayList<? extends Parcelable>) ingredientList);
-                    bundle.putParcelableArrayList(Step.mString, (ArrayList<? extends Parcelable>) stepList);
+                    bundle.putParcelableArrayList(Constants.INGREDIENT, (ArrayList<? extends Parcelable>) ingredientList);
+                    bundle.putParcelableArrayList(Constants.STEP, (ArrayList<? extends Parcelable>) stepList);
                     bundle.putString("TITLE", title);
                     final Intent i = new Intent(v.getContext(), MasterListActivity.class);
                     i.putExtras(bundle);

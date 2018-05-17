@@ -5,6 +5,7 @@ import android.os.Parcelable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.example.maola.bakingapp.Constants;
 import com.example.maola.bakingapp.Model.Ingredient;
@@ -26,15 +27,15 @@ public class MasterListActivity extends AppCompatActivity implements MasterListF
         // Get list of ingredient and steps
         Intent i = getIntent();
         Bundle bundle = i.getExtras();
-        ingredientList = bundle.getParcelableArrayList(Ingredient.mIngredientString);
-        stepList = bundle.getParcelableArrayList(Step.mString);
+        ingredientList = bundle.getParcelableArrayList(Constants.INGREDIENT);
+        stepList = bundle.getParcelableArrayList(Constants.STEP);
         setTitle(bundle.getString("TITLE"));
 
 
         // Pass the data to the fragment to create the recyclerView
         Bundle b = new Bundle();
-        b.putParcelableArrayList(Ingredient.mIngredientString, (ArrayList<? extends Parcelable>) ingredientList);
-        b.putParcelableArrayList(Step.mString, (ArrayList<? extends Parcelable>) stepList);
+        b.putParcelableArrayList(Constants.INGREDIENT, (ArrayList<? extends Parcelable>) ingredientList);
+        b.putParcelableArrayList(Constants.STEP, (ArrayList<? extends Parcelable>) stepList);
 
         // Start the fragment
         if(savedInstanceState == null){
