@@ -20,31 +20,25 @@ public class StepDetailActivity extends AppCompatActivity implements StepDetailF
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_step_detail);
 
-        setTitle("Titolo");
-
         Intent i = getIntent();
         Bundle bundle = i.getExtras();
         stepList = bundle.getParcelableArrayList(Constants.STEP);
         stepIndex = bundle.getInt(Constants.STEP_INDEX);
 
+        setTitle(stepList.get(stepIndex).getShortDescription());
+
         if(savedInstanceState == null){
-            StepDetailFragment stepDetailFragment = new StepDetailFragment();
-            FragmentManager fragmentManager = getSupportFragmentManager();
-
-            Bundle b = new Bundle();
-            b.putParcelableArrayList(Constants.STEP, (ArrayList<? extends Parcelable>) stepList);
-            b.putInt(Constants.STEP_INDEX, stepIndex);
-            stepDetailFragment.setArguments(b);
-
-            fragmentManager.beginTransaction()
-                    .add(R.id.step_detail_fragment, stepDetailFragment)
-                    .commit();
+            startStepDetailFragment();
         }
     }
 
     @Override
     public void onNavigationStepClicked(int index) {
         stepIndex = index;
+        startStepDetailFragment();
+    }
+
+    private void startStepDetailFragment(){
         StepDetailFragment stepDetailFragment = new StepDetailFragment();
         FragmentManager fragmentManager = getSupportFragmentManager();
 

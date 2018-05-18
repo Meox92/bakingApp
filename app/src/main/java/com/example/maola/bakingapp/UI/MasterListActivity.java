@@ -14,15 +14,15 @@ import com.example.maola.bakingapp.R;
 
 import java.util.ArrayList;
 
-public class MasterListActivity extends AppCompatActivity implements MasterListFragment.onStepClickListener {
+public class MasterListActivity extends AppCompatActivity implements MasterListFragment.onStepClickListener, StepDetailFragment.onNavigationStepClickListener {
     private ArrayList<Ingredient> ingredientList;
     private ArrayList<Step> stepList;
+    private boolean mTwoPanel = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_master_list);
-
 
         // Get list of ingredient and steps
         Intent i = getIntent();
@@ -30,6 +30,23 @@ public class MasterListActivity extends AppCompatActivity implements MasterListF
         ingredientList = bundle.getParcelableArrayList(Constants.INGREDIENT);
         stepList = bundle.getParcelableArrayList(Constants.STEP);
         setTitle(bundle.getString("TITLE"));
+
+        if(findViewById(R.id.tablet_layout) != null) {
+            mTwoPanel = true;
+            if (savedInstanceState == null){
+                StepDetailFragment stepDetailFragment = new StepDetailFragment();
+                FragmentManager fragmentManager = getSupportFragmentManager();
+
+                Bundle b = new Bundle();
+                b.putParcelableArrayList(Constants.STEP, (ArrayList<? extends Parcelable>) stepList);
+                b.putInt(Constants.STEP_INDEX, 0);
+                stepDetailFragment.setArguments(b);
+
+                fragmentManager.beginTransaction()
+                        .add(R.id.step_detail_fragment, stepDetailFragment)
+                        .commit();
+            }
+        }
 
 
         // Pass the data to the fragment to create the recyclerView
@@ -56,8 +73,24 @@ public class MasterListActivity extends AppCompatActivity implements MasterListF
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(Constants.STEP, (ArrayList<? extends Parcelable>) stepList);
         bundle.putInt(Constants.STEP_INDEX, index);
-        final Intent i = new Intent(getApplicationContext(), StepDetailActivity.class);
-        i.putExtras(bundle);
-        startActivity(i);
+        if(!mTwoPanel){
+            final Intent i = new Intent(getApplicationContext(), StepDetailActivity.class);
+            i.putExtras(bundle);
+            startActivity(i);
+        } else {
+            StepDetailFragment stepDetailFragment = new StepDetailFragment();
+            FragmentManager fragmentManager = getSupportFragmentManager();
+
+            stepDetailFragment.setArguments(bundle);
+
+            fragmentManager.beginTransaction()
+                    .replace(R.id.step_detail_fragment, stepDetailFragment)
+                    .commit();
+        }
+    }
+
+    @Override
+    public void onNavigationStepClicked(int index) {
+
     }
 }

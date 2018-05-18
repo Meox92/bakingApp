@@ -64,7 +64,6 @@ public class MasterListFragment extends Fragment implements StepAdapter.ListItem
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_master_list, container, false);
 
-//        mIngredientsTextView = (TextView) rootView.findViewById(R.id.steps_list_ingredients);
         mStepRecyclerView = (RecyclerView) rootView.findViewById(R.id.steps_list_recycler_view);
         mIngredientRecyclerView = (RecyclerView) rootView.findViewById(R.id.steps_list_ingredients_recycler_view);
         mScrollView = (ScrollView) rootView.findViewById(R.id.scroll_view);
@@ -78,15 +77,18 @@ public class MasterListFragment extends Fragment implements StepAdapter.ListItem
             mStepRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             StepAdapter stepAdapter = new StepAdapter(stepList, this);
             mStepRecyclerView.setAdapter(stepAdapter);
+            mIngredientRecyclerView.setNestedScrollingEnabled(false);
+
 
             mIngredientRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
             IngredientAdapter ingredientAdapter = new IngredientAdapter(ingredientList);
             mIngredientRecyclerView.setAdapter(ingredientAdapter);
+            mIngredientRecyclerView.setNestedScrollingEnabled(false);
 
         }
 
         if(savedInstanceState != null) {
-            final int[] position = savedInstanceState.getIntArray("ARTICLE_SCROLL_POSITION");
+            final int[] position = savedInstanceState.getIntArray(Constants.ARTICLE_SCROLL_POSITION);
             if (position != null)
                 mScrollView.post(new Runnable() {
                     public void run() {
@@ -101,7 +103,7 @@ public class MasterListFragment extends Fragment implements StepAdapter.ListItem
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putIntArray("ARTICLE_SCROLL_POSITION",
+        outState.putIntArray(Constants.ARTICLE_SCROLL_POSITION,
                 new int[]{ mScrollView.getScrollX(), mScrollView.getScrollY()});    }
 
     @Override

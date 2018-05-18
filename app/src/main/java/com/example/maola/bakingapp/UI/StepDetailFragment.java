@@ -3,6 +3,7 @@ package com.example.maola.bakingapp.UI;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -67,7 +68,7 @@ public class StepDetailFragment extends Fragment implements NavigationStepAdapte
             onNavigationStepClickListener = (onNavigationStepClickListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString()
-                    + " must implement OnImageClickListener");
+                    + " must implement onNavigationStepClickListener");
         }
     }
 
@@ -77,6 +78,8 @@ public class StepDetailFragment extends Fragment implements NavigationStepAdapte
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_step_detail, container, false);
+
+
 
         if(savedInstanceState != null){
             playbackPosition = savedInstanceState.getLong(PLAYBACK_POSITION);
@@ -106,6 +109,20 @@ public class StepDetailFragment extends Fragment implements NavigationStepAdapte
             textView.setText(stepList.get(stepIndex).getDescription());
             initializePlayer();
 
+        }
+
+        // Detect orientation
+        int orientation = getResources().getConfiguration().orientation;
+        switch(orientation)
+        {
+            case  Configuration.ORIENTATION_LANDSCAPE:
+                hideSystemUi();
+                mRecyclerView.setVisibility(View.GONE);
+                break;
+            case Configuration.ORIENTATION_PORTRAIT:
+                break;
+            default:
+                break;
         }
 
 
