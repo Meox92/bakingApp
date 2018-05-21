@@ -96,14 +96,9 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.MyViewHold
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    List<Ingredient> ingredientList = recipeArrayList.get(position).getIngredients();
-                    List<Step> stepList = recipeArrayList.get(position).getSteps();
-                    String title = recipeArrayList.get(position).getName();
-                    Toast.makeText(v.getContext(), "Clicked", Toast.LENGTH_SHORT).show();
                     Bundle bundle = new Bundle();
-                    bundle.putParcelableArrayList(Constants.INGREDIENT, (ArrayList<? extends Parcelable>) ingredientList);
-                    bundle.putParcelableArrayList(Constants.STEP, (ArrayList<? extends Parcelable>) stepList);
-                    bundle.putString("TITLE", title);
+                    Recipe recipe = recipeArrayList.get(position);
+                    bundle.putParcelable("RECIPE", (Parcelable) recipe);
                     final Intent i = new Intent(v.getContext(), MasterListActivity.class);
                     i.putExtras(bundle);
                     v.getContext().startActivity(i);

@@ -11,14 +11,15 @@ import com.example.maola.bakingapp.Model.Ingredient;
 import com.example.maola.bakingapp.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class IngredientAdapter extends RecyclerView.Adapter<IngredientAdapter.MyViewHolder> {
 
-    private ArrayList<Ingredient> ingredientArrayList;
+    private List<Ingredient> ingredientArrayList;
     private Ingredient ingredient;
 
 
-    public IngredientAdapter(ArrayList<Ingredient> ingredientArrayList) {
+    public IngredientAdapter(List<Ingredient> ingredientArrayList) {
         this.ingredientArrayList = ingredientArrayList;
     }
 

@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.maola.bakingapp.Adapter.NavigationStepAdapter;
 import com.example.maola.bakingapp.Constants;
@@ -40,13 +41,12 @@ public class StepDetailFragment extends Fragment implements NavigationStepAdapte
     private SimpleExoPlayer player;
     private RecyclerView mRecyclerView;
     private long playbackPosition = 0;
-    private int currentWindow = 0;
     private Boolean playWhenReady = true;
     private Step step;
     private ArrayList<Step> stepList;
     private static String PLAYBACK_POSITION = "PLAYBACK_POSITION";
-    private static String CURRENT_WINDOW = "CURRENT_WINDOWS";
     private onNavigationStepClickListener onNavigationStepClickListener;
+    private boolean mTwoPanel = false;
 
 
 
@@ -83,7 +83,6 @@ public class StepDetailFragment extends Fragment implements NavigationStepAdapte
 
         if(savedInstanceState != null){
             playbackPosition = savedInstanceState.getLong(PLAYBACK_POSITION);
-            currentWindow = savedInstanceState.getInt(CURRENT_WINDOW);
         }
 
         playerView = (PlayerView) rootView.findViewById(R.id.detail_video_player);
@@ -98,6 +97,7 @@ public class StepDetailFragment extends Fragment implements NavigationStepAdapte
             stepList = bundle.getParcelableArrayList(Constants.STEP);
             int stepIndex = bundle.getInt(Constants.STEP_INDEX);
             step = stepList.get(stepIndex);
+            mTwoPanel = bundle.getBoolean("MTWOPANEL");
 
             LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
             layoutManager.scrollToPositionWithOffset(stepIndex, 20);
@@ -113,18 +113,20 @@ public class StepDetailFragment extends Fragment implements NavigationStepAdapte
 
         // Detect orientation
         int orientation = getResources().getConfiguration().orientation;
+        int screenSize = getResources().getConfiguration().screenLayout;
         switch(orientation)
         {
             case  Configuration.ORIENTATION_LANDSCAPE:
-                hideSystemUi();
-                mRecyclerView.setVisibility(View.GONE);
+                if(!mTwoPanel){
+                    hideSystemUi();
+                    mRecyclerView.setVisibility(View.GONE);
+                }
                 break;
             case Configuration.ORIENTATION_PORTRAIT:
                 break;
             default:
                 break;
         }
-
 
         return rootView;
     }
@@ -196,7 +198,6 @@ public class StepDetailFragment extends Fragment implements NavigationStepAdapte
     private void releasePlayer() {
         if (player != null) {
             playbackPosition = player.getCurrentPosition();
-            currentWindow = player.getCurrentWindowIndex();
             playWhenReady = player.getPlayWhenReady();
             player.stop();
             player.release();

@@ -16,10 +16,11 @@ import com.example.maola.bakingapp.UI.MasterListFragment;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class StepAdapter extends RecyclerView.Adapter<StepAdapter.MyViewHolder> {
 
-    private ArrayList<Step> stepArrayList;
+    private List<Step> stepArrayList;
     private Step step;
     private ListItemClickListener listItemClickListener;
 
@@ -28,7 +29,7 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.MyViewHolder> 
     }
 
 
-    public StepAdapter(ArrayList<Step> stepArrayList, ListItemClickListener listItemClickListener) {
+    public StepAdapter(List<Step> stepArrayList, ListItemClickListener listItemClickListener) {
         this.stepArrayList = stepArrayList;
         this.listItemClickListener = listItemClickListener;
     }
@@ -56,8 +57,10 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.MyViewHolder> 
         holder.long_description.setText(step.getDescription());
 
         String videoURL = step.getVideoURL();
-        if(videoURL != null && videoURL != ""){
+        if(videoURL != null && !videoURL.isEmpty()) {
             holder.imageView.setVisibility(View.VISIBLE);
+        } else {
+            holder.imageView.setVisibility(View.INVISIBLE);
         }
 
         holder.position = position;

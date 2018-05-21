@@ -23,6 +23,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:background="@android:color/holo_orange_light"
+            android:drawableRight="@android:drawable/btn_star_big_off"
             android:text="@string/ingredients"
             android:textAllCaps="true"
             android:textSize="@dimen/recipe_title"

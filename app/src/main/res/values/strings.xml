@@ -5,5 +5,10 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="servings">Servings</string>
     <string name="ingredients">Ingredients</string>
+    <string name="appwidget_text">Recipe</string>
+    <string name="add_widget">Add widget</string>
+    <string name="no_favorite">You have not yet set a favorite recipe, choose one clicking on the star button in recipe detail page </string>
+    <string name="added_favorite">This is your favorite recipe now, you can access it directly from the widget ;)</string>
+
 
 </resources>

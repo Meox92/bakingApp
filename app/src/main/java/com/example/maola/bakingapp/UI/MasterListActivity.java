@@ -9,14 +9,17 @@ import android.util.Log;
 
 import com.example.maola.bakingapp.Constants;
 import com.example.maola.bakingapp.Model.Ingredient;
+import com.example.maola.bakingapp.Model.Recipe;
 import com.example.maola.bakingapp.Model.Step;
 import com.example.maola.bakingapp.R;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MasterListActivity extends AppCompatActivity implements MasterListFragment.onStepClickListener, StepDetailFragment.onNavigationStepClickListener {
-    private ArrayList<Ingredient> ingredientList;
-    private ArrayList<Step> stepList;
+    private List<Ingredient> ingredientList;
+    private List<Step> stepList;
+    private Recipe recipe;
     private boolean mTwoPanel = false;
 
     @Override
@@ -27,9 +30,15 @@ public class MasterListActivity extends AppCompatActivity implements MasterListF
         // Get list of ingredient and steps
         Intent i = getIntent();
         Bundle bundle = i.getExtras();
-        ingredientList = bundle.getParcelableArrayList(Constants.INGREDIENT);
-        stepList = bundle.getParcelableArrayList(Constants.STEP);
-        setTitle(bundle.getString("TITLE"));
+        if(bundle == null){
+            Log.i("MM", "opened from widget");
+
+            return;
+        }
+        recipe = bundle.getParcelable("RECIPE");
+        ingredientList = recipe.getIngredients();
+        stepList = recipe.getSteps();
+        setTitle(recipe.getName());
 
         if(findViewById(R.id.tablet_layout) != null) {
             mTwoPanel = true;
@@ -40,6 +49,7 @@ public class MasterListActivity extends AppCompatActivity implements MasterListF
                 Bundle b = new Bundle();
                 b.putParcelableArrayList(Constants.STEP, (ArrayList<? extends Parcelable>) stepList);
                 b.putInt(Constants.STEP_INDEX, 0);
+                b.putBoolean("MTWOPANEL", mTwoPanel);
                 stepDetailFragment.setArguments(b);
 
                 fragmentManager.beginTransaction()
@@ -51,8 +61,7 @@ public class MasterListActivity extends AppCompatActivity implements MasterListF
 
         // Pass the data to the fragment to create the recyclerView
         Bundle b = new Bundle();
-        b.putParcelableArrayList(Constants.INGREDIENT, (ArrayList<? extends Parcelable>) ingredientList);
-        b.putParcelableArrayList(Constants.STEP, (ArrayList<? extends Parcelable>) stepList);
+        b.putParcelable(Constants.RECIPE, recipe);
 
         // Start the fragment
         if(savedInstanceState == null){
@@ -68,11 +77,11 @@ public class MasterListActivity extends AppCompatActivity implements MasterListF
 
 
     @Override
-    public void onStepClicked(ArrayList<Step> stepList, int index) {
-//        Toast.makeText(getApplicationContext(), "Clicked " + step.getDescription(), Toast.LENGTH_SHORT).show();
+    public void onStepClicked(List<Step> stepList, int index) {
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList(Constants.STEP, (ArrayList<? extends Parcelable>) stepList);
         bundle.putInt(Constants.STEP_INDEX, index);
+        bundle.putBoolean("MTWOPANEL", mTwoPanel);
         if(!mTwoPanel){
             final Intent i = new Intent(getApplicationContext(), StepDetailActivity.class);
             i.putExtras(bundle);
