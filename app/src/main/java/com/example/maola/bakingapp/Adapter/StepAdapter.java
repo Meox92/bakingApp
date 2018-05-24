@@ -57,8 +57,13 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.MyViewHolder> 
         holder.long_description.setText(step.getDescription());
 
         String videoURL = step.getVideoURL();
+        String thumbUrl = step.getThumbnailURL();
         if(videoURL != null && !videoURL.isEmpty()) {
             holder.imageView.setVisibility(View.VISIBLE);
+            if (!thumbUrl.isEmpty()) {
+                Picasso.get()
+                        .load(thumbUrl)
+                        .into(holder.imageView);            }
         } else {
             holder.imageView.setVisibility(View.INVISIBLE);
         }

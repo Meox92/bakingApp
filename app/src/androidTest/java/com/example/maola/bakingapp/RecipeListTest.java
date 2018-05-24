@@ -1,6 +1,7 @@
 package com.example.maola.bakingapp;
 
 import android.support.test.espresso.Espresso;
+import android.support.test.espresso.IdlingRegistry;
 import android.support.test.espresso.idling.CountingIdlingResource;
 import android.support.test.rule.ActivityTestRule;
 import android.support.test.runner.AndroidJUnit4;
@@ -26,14 +27,10 @@ public class RecipeListTest {
     @Rule
     public ActivityTestRule<MainActivity> mActivityTestRule = new ActivityTestRule<>(MainActivity.class);
 
-
     @Before
     public void registerIdlingResource() {
         CountingIdlingResource mainActivityIdlingResource = mActivityTestRule.getActivity().getEspressoIdlingResourceForMainActivity();
-        // registering MainActivity's idling resource for enabling Espresso sync with MainActivity's background threads
-        Espresso.registerIdlingResources(mainActivityIdlingResource);
-
-
+        boolean registered = IdlingRegistry.getInstance().register(mainActivityIdlingResource);
     }
 
     @Test
