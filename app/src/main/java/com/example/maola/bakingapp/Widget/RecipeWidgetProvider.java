@@ -5,6 +5,8 @@ import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.net.Uri;
 import android.widget.RemoteViews;
 
 import com.example.maola.bakingapp.Constants;
@@ -20,17 +22,21 @@ public class RecipeWidgetProvider extends AppWidgetProvider {
     static void updateAppWidget(Context context, AppWidgetManager appWidgetManager,
                                 int appWidgetId) {
 
-        CharSequence widgetText = context.getString(R.string.appwidget_text);
-        // Construct the RemoteViews object
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.recipe_widget_provider);
-        views.setTextViewText(R.id.appwidget_text, widgetText);
 
-        Intent intent = new Intent(context, MainActivity.class);
+        Intent intent = new Intent(context, RecipeWidgetService.class);
+        intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId);
+        intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
 
-        intent.putExtra(Constants.WIDGET, true);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
-        views.setOnClickPendingIntent(R.id.appwidget_text, pendingIntent);
+        final SharedPreferences prefs = context.getSharedPreferences(
+                Constants.SHARED_PREFERENCES, Context.MODE_PRIVATE);
+        String title = prefs.getString(Constants.SAVED_RECIPE_STRING, "");
+        if(!title.isEmpty()){
+            views.setTextViewText(R.id.appwidget_text, title);
+        }
 
+        // Set up the RemoteViews object to use a RemoteViews adapter.
+        views.setRemoteAdapter(appWidgetId, R.id.appwidget_list, intent);
         // Instruct the widget manager to update the widget
         appWidgetManager.updateAppWidget(appWidgetId, views);
     }
@@ -41,6 +47,7 @@ public class RecipeWidgetProvider extends AppWidgetProvider {
         for (int appWidgetId : appWidgetIds) {
             updateAppWidget(context, appWidgetManager, appWidgetId);
         }
+        super.onUpdate(context,appWidgetManager,appWidgetIds);
     }
 
     @Override

@@ -1,11 +1,11 @@
 package com.example.maola.bakingapp.UI;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Parcelable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.example.maola.bakingapp.Constants;
 import com.example.maola.bakingapp.Model.Ingredient;
@@ -21,6 +21,8 @@ public class MasterListActivity extends AppCompatActivity implements MasterListF
     private List<Step> stepList;
     private Recipe recipe;
     private boolean mTwoPanel = false;
+    public static Context contextOfApplication;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,16 +32,25 @@ public class MasterListActivity extends AppCompatActivity implements MasterListF
         // Get list of ingredient and steps
         Intent i = getIntent();
         Bundle bundle = i.getExtras();
-        if(bundle == null){
-            Log.i("MM", "opened from widget");
+        contextOfApplication = getApplicationContext();
 
-            return;
+//        if(bundle == null){
+//            Log.i("MM", "opened from widget");
+//
+//            return;
+//        }
+
+        // Get info
+        if (savedInstanceState == null){
+            recipe = bundle.getParcelable("RECIPE");
+        } else {
+            recipe = savedInstanceState.getParcelable(Constants.RECIPE);
         }
-        recipe = bundle.getParcelable("RECIPE");
         ingredientList = recipe.getIngredients();
         stepList = recipe.getSteps();
         setTitle(recipe.getName());
 
+        // Tablet layout
         if(findViewById(R.id.tablet_layout) != null) {
             mTwoPanel = true;
             if (savedInstanceState == null){
@@ -54,6 +65,7 @@ public class MasterListActivity extends AppCompatActivity implements MasterListF
 
                 fragmentManager.beginTransaction()
                         .add(R.id.step_detail_fragment, stepDetailFragment)
+                        .addToBackStack("backStack")
                         .commit();
             }
         }
@@ -71,8 +83,22 @@ public class MasterListActivity extends AppCompatActivity implements MasterListF
 
             fragmentManager.beginTransaction()
                     .add(R.id.master_list_fragment, masterListFragment)
+                    .addToBackStack("backStack")
                     .commit();
         }
+
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelable(Constants.RECIPE, recipe);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        recipe = savedInstanceState.getParcelable(Constants.RECIPE);
     }
 
 
@@ -82,11 +108,11 @@ public class MasterListActivity extends AppCompatActivity implements MasterListF
         bundle.putParcelableArrayList(Constants.STEP, (ArrayList<? extends Parcelable>) stepList);
         bundle.putInt(Constants.STEP_INDEX, index);
         bundle.putBoolean("MTWOPANEL", mTwoPanel);
-        if(!mTwoPanel){
+        if(!mTwoPanel){ // phone
             final Intent i = new Intent(getApplicationContext(), StepDetailActivity.class);
             i.putExtras(bundle);
             startActivity(i);
-        } else {
+        } else { // tablet
             StepDetailFragment stepDetailFragment = new StepDetailFragment();
             FragmentManager fragmentManager = getSupportFragmentManager();
 
@@ -94,6 +120,7 @@ public class MasterListActivity extends AppCompatActivity implements MasterListF
 
             fragmentManager.beginTransaction()
                     .replace(R.id.step_detail_fragment, stepDetailFragment)
+                    .addToBackStack("backStack")
                     .commit();
         }
     }
@@ -102,4 +129,5 @@ public class MasterListActivity extends AppCompatActivity implements MasterListF
     public void onNavigationStepClicked(int index) {
 
     }
+
 }

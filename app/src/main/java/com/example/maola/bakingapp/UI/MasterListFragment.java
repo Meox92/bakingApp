@@ -1,8 +1,10 @@
 package com.example.maola.bakingapp.UI;
 
 
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
@@ -22,8 +24,8 @@ import com.example.maola.bakingapp.Model.Ingredient;
 import com.example.maola.bakingapp.Model.Recipe;
 import com.example.maola.bakingapp.Model.Step;
 import com.example.maola.bakingapp.R;
+import com.example.maola.bakingapp.database.RecipeContract;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -38,8 +40,10 @@ public class MasterListFragment extends Fragment implements StepAdapter.ListItem
     private List<Ingredient> ingredientList;
     private List<Step> stepList;
     private onStepClickListener onStepClickListener;
+    private Recipe recipe;
     private int recipeID;
     private boolean isSaved;
+
 
     public MasterListFragment() {
         // Required empty public constructor
@@ -78,7 +82,7 @@ public class MasterListFragment extends Fragment implements StepAdapter.ListItem
         Bundle bundle = this.getArguments();
         if(bundle != null){
             // Get steps and ingredients
-            Recipe recipe = bundle.getParcelable(Constants.RECIPE);
+            recipe = bundle.getParcelable(Constants.RECIPE);
             recipeID = recipe.getId();
             ingredientList = recipe.getIngredients();
             stepList = recipe.getSteps();
@@ -109,13 +113,12 @@ public class MasterListFragment extends Fragment implements StepAdapter.ListItem
 
         final SharedPreferences prefs = getActivity().getSharedPreferences(
                 Constants.SHARED_PREFERENCES, Context.MODE_PRIVATE);
-        int savedRecipeID = prefs.getInt(Constants.SAVED_RECIPE_ID, -1);
-        isSaved = false;
-        if(savedRecipeID != recipeID){
+
+        isSaved = isFavourite();
+        if(!isSaved){
             mIngredientsTextView.setCompoundDrawablesWithIntrinsicBounds(0,0,android.R.drawable.btn_star_big_off,0);
         } else {
             mIngredientsTextView.setCompoundDrawablesWithIntrinsicBounds(0,0,android.R.drawable.btn_star_big_on,0);
-            isSaved = true;
         }
 
         mIngredientsTextView.setOnClickListener(new View.OnClickListener() {
@@ -123,20 +126,68 @@ public class MasterListFragment extends Fragment implements StepAdapter.ListItem
             public void onClick(View v) {
                 if(isSaved){
                     mIngredientsTextView.setCompoundDrawablesWithIntrinsicBounds(0,0,android.R.drawable.btn_star_big_off,0);
-                    // Set default saved recipe
-                    prefs.edit().putInt(Constants.SAVED_RECIPE_ID, 1).apply();
                     isSaved = false;
+                    removeData();
+                    prefs.edit().putString(Constants.SAVED_RECIPE_STRING, "No recipe saved").apply();
+
 
                 } else {
                     mIngredientsTextView.setCompoundDrawablesWithIntrinsicBounds(0,0,android.R.drawable.btn_star_big_on,0);
-                    prefs.edit().putInt(Constants.SAVED_RECIPE_ID, recipeID).apply();
                     Toast.makeText(getActivity(), R.string.added_favorite, Toast.LENGTH_SHORT).show();
                     isSaved = true;
+                    insertData();
+                    prefs.edit().putString(Constants.SAVED_RECIPE_STRING, recipe.getName()).apply();
+
                 }
             }
         });
 
         return rootView;
+    }
+
+    public void insertData() {
+        insertDataIngredients();
+    }
+
+    void insertDataIngredients() {
+        for (Ingredient ingredient : recipe.getIngredients()) {
+            ContentValues foodValues = new ContentValues();
+            foodValues.put(RecipeContract.IngredientEntry.COLUMNS_FOOD_NAME, recipe.getName().replace(" ", "_"));
+            foodValues.put(RecipeContract.IngredientEntry.COLUMN_INGREDIENT_MEASURE, ingredient.getMeasure());
+            foodValues.put(RecipeContract.IngredientEntry.COLUMN_INGREDIENT_NAME, ingredient.getIngredient());
+            foodValues.put(RecipeContract.IngredientEntry.COLUMN_INGREDIENT_QUANTITY, ingredient.getQuantity());
+            getActivity().getApplicationContext().getContentResolver().insert(RecipeContract.IngredientEntry.CONTENT_URI_INGREDIENT_TABLE,
+                    foodValues);
+        }
+    }
+
+    //remove favourite from DB by using content provider
+    void removeData() {
+        removeIngredients();
+    }
+
+    void removeIngredients() {
+        String newName = recipe.getName().replace(" ", "_");
+        String[] selections = {newName};
+        getContext().getContentResolver().delete(
+                RecipeContract.IngredientEntry.CONTENT_URI_INGREDIENT_TABLE,
+                RecipeContract.IngredientEntry.COLUMNS_FOOD_NAME + " =? ",
+                selections);
+    }
+
+
+    boolean isFavourite() {
+        String newName = recipe.getName().replace(" ", "_");
+        String[] selections = {newName};
+        Cursor c = getContext().getContentResolver().query(
+                RecipeContract.IngredientEntry.CONTENT_URI_INGREDIENT_TABLE,
+                null,
+                RecipeContract.FoodEntry.COLUMN_FOOD_NAME + " =? ",
+                selections,
+                null);
+
+        return c.getCount() > 0;
+
     }
 
     @Override

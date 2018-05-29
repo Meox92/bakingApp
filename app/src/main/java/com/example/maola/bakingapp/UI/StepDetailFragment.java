@@ -47,6 +47,7 @@ public class StepDetailFragment extends Fragment implements NavigationStepAdapte
     private static String PLAYBACK_POSITION = "PLAYBACK_POSITION";
     private onNavigationStepClickListener onNavigationStepClickListener;
     private boolean mTwoPanel = false;
+    private Uri uri;
 
 
 
@@ -107,7 +108,8 @@ public class StepDetailFragment extends Fragment implements NavigationStepAdapte
             mRecyclerView.setAdapter(navigationStepAdapter);
 
             textView.setText(stepList.get(stepIndex).getDescription());
-            initializePlayer();
+            uri = Uri.parse(step.getVideoURL());
+            initializePlayer(uri);
 
         }
 
@@ -134,11 +136,11 @@ public class StepDetailFragment extends Fragment implements NavigationStepAdapte
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        releasePlayer();
+        onPause();
         outState.putLong(PLAYBACK_POSITION, playbackPosition);
     }
 
-    private void initializePlayer() {
+    private void initializePlayer(Uri uri) {
         player = ExoPlayerFactory.newSimpleInstance(
                 new DefaultRenderersFactory(getContext()),
                 new DefaultTrackSelector(), new DefaultLoadControl());
@@ -150,7 +152,7 @@ public class StepDetailFragment extends Fragment implements NavigationStepAdapte
             return;
         }
 
-        Uri uri = Uri.parse(step.getVideoURL());
+//        uri = Uri.parse(step.getVideoURL());
         MediaSource mediaSource = buildMediaSource(uri);
         player.prepare(mediaSource);
         player.seekTo(playbackPosition);
@@ -179,6 +181,14 @@ public class StepDetailFragment extends Fragment implements NavigationStepAdapte
             releasePlayer();
         }
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (uri != null)
+            initializePlayer(uri);
+    }
+
 
     @Override
     public void onDestroy() {

@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.os.Parcelable;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 
 import com.example.maola.bakingapp.Constants;
 import com.example.maola.bakingapp.Model.Step;
@@ -49,6 +50,23 @@ public class StepDetailActivity extends AppCompatActivity implements StepDetailF
 
         fragmentManager.beginTransaction()
                 .replace(R.id.step_detail_fragment, stepDetailFragment)
+                .addToBackStack("backStack")
                 .commit();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+        }
+        return false;
     }
 }
