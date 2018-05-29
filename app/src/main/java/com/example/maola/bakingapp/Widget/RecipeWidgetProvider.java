@@ -1,6 +1,5 @@
 package com.example.maola.bakingapp.Widget;
 
-import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.Context;
@@ -10,9 +9,7 @@ import android.net.Uri;
 import android.widget.RemoteViews;
 
 import com.example.maola.bakingapp.Constants;
-import com.example.maola.bakingapp.MainActivity;
 import com.example.maola.bakingapp.R;
-import com.example.maola.bakingapp.UI.MasterListActivity;
 
 /**
  * Implementation of App Widget functionality.
