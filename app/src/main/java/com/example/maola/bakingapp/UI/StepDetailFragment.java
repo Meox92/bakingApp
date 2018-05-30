@@ -45,6 +45,7 @@ public class StepDetailFragment extends Fragment implements NavigationStepAdapte
     private Step step;
     private ArrayList<Step> stepList;
     private static String PLAYBACK_POSITION = "PLAYBACK_POSITION";
+    private static String PLAY_WHEN_READY = "PLAY_WHEN_READY";
     private onNavigationStepClickListener onNavigationStepClickListener;
     private boolean mTwoPanel = false;
     private Uri uri;
@@ -84,6 +85,7 @@ public class StepDetailFragment extends Fragment implements NavigationStepAdapte
 
         if(savedInstanceState != null){
             playbackPosition = savedInstanceState.getLong(PLAYBACK_POSITION);
+            playWhenReady = savedInstanceState.getBoolean(PLAY_WHEN_READY);
         }
 
         playerView = (PlayerView) rootView.findViewById(R.id.detail_video_player);
@@ -136,18 +138,23 @@ public class StepDetailFragment extends Fragment implements NavigationStepAdapte
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        onPause();
+        savePlayer();
         outState.putLong(PLAYBACK_POSITION, playbackPosition);
+        outState.putBoolean(PLAY_WHEN_READY, playWhenReady);
     }
 
     private void initializePlayer(Uri uri) {
+        if (player != null){
+            return;
+        }
         player = ExoPlayerFactory.newSimpleInstance(
                 new DefaultRenderersFactory(getContext()),
                 new DefaultTrackSelector(), new DefaultLoadControl());
 
+
         playerView.setPlayer(player);
 
-        if(step.getVideoURL() == null || step.getVideoURL().equals("")){
+        if(step.getVideoURL().isEmpty()){
             playerView.setVisibility(View.GONE);
             return;
         }
@@ -207,11 +214,17 @@ public class StepDetailFragment extends Fragment implements NavigationStepAdapte
 
     private void releasePlayer() {
         if (player != null) {
-            playbackPosition = player.getCurrentPosition();
-            playWhenReady = player.getPlayWhenReady();
+            savePlayer();
             player.stop();
             player.release();
             player = null;
+        }
+    }
+
+    private void savePlayer() {
+        if (player != null) {
+            playbackPosition = player.getCurrentPosition();
+            playWhenReady = player.getPlayWhenReady();
         }
     }
 

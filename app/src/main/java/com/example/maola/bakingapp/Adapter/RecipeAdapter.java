@@ -63,7 +63,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.MyViewHold
         holder.servings.setText(servings);
 
         String imageUL = recipe.getImage();
-        if(imageUL != null && imageUL != ""){
+        if(imageUL != null && !imageUL.isEmpty()){
             holder.imageView.setVisibility(View.VISIBLE);
             Picasso.get()
                     .load(imageUL)
